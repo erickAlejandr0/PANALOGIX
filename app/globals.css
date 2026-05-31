@@ -3,11 +3,31 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --panalogix-navy: #0b1f3a;
+  --panalogix-navy-dark: #000615;
+  --panalogix-cyan: #00aeef;
+  --panalogix-green: #2ecc71;
+  --panalogix-surface: #f8fafc;
+  --panalogix-text: #0f172a;
+  --panalogix-muted: #64748b;
+  --panalogix-border: #e2e8f0;
+  --panalogix-placeholder: #94a3b8;
+  --panalogix-alert-bg: #fffbeb;
+  --panalogix-alert-border: #fde68a;
+  --panalogix-alert-text: #78350f;
+  --panalogix-register-text: #1a4c90;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-panalogix-navy: var(--panalogix-navy);
+  --color-panalogix-cyan: var(--panalogix-cyan);
+  --color-panalogix-green: var(--panalogix-green);
+  --color-panalogix-surface: var(--panalogix-surface);
+  --color-panalogix-text: var(--panalogix-text);
+  --color-panalogix-muted: var(--panalogix-muted);
+  --color-panalogix-border: var(--panalogix-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -22,5 +42,36 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+body {
+  background: radial-gradient(circle at center, #0b1f3a 0%, #000615 100%);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nebula-glow { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; pointer-events: none; z-index: 0; transition: transform 0.5s ease-out; }
+.nebula-1 { background: #00658d; width: 60vw; height: 60vw; top: -20vh; left: -20vw; animation: pulse-slow 15s infinite alternate ease-in-out; }
+.nebula-2 { background: #2dbcfe; width: 50vw; height: 50vw; bottom: -20vh; right: -10vw; animation: pulse-slow 20s infinite alternate-reverse ease-in-out; }
+
+@keyframes pulse-slow {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+  50% { transform: scale(1.1) translate(2vw, -2vh); opacity: 0.5; }
+  100% { transform: scale(0.9) translate(-2vw, 2vh); opacity: 0.2; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+.interactive-layer { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nebula-1, .nebula-2, .animate-float { animation: none; }
+  .interactive-layer { transition: none; }
 }
