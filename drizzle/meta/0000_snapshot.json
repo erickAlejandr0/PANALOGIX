@@ -1,0 +1,1483 @@
+{
+  "id": "5357fabe-8208-47e3-a553-0a19f1c1d2cd",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.carga_types": {
+      "name": "carga_types",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "carga_types_nombre_unique": {
+          "name": "carga_types_nombre_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nombre"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.categoria_vehiculo": {
+      "name": "categoria_vehiculo",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.config_articulado": {
+      "name": "config_articulado",
+      "schema": "",
+      "columns": {
+        "id_config": {
+          "name": "id_config",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ejes_cabezal": {
+          "name": "ejes_cabezal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ejes_semirremolque": {
+          "name": "ejes_semirremolque",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "config_articulado_id_config_config_vehiculo_id_fk": {
+          "name": "config_articulado_id_config_config_vehiculo_id_fk",
+          "tableFrom": "config_articulado",
+          "tableTo": "config_vehiculo",
+          "columnsFrom": [
+            "id_config"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.config_especial": {
+      "name": "config_especial",
+      "schema": "",
+      "columns": {
+        "id_config": {
+          "name": "id_config",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "config_especial_id_config_config_vehiculo_id_fk": {
+          "name": "config_especial_id_config_config_vehiculo_id_fk",
+          "tableFrom": "config_especial",
+          "tableTo": "config_vehiculo",
+          "columnsFrom": [
+            "id_config"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.config_rigido": {
+      "name": "config_rigido",
+      "schema": "",
+      "columns": {
+        "id_config": {
+          "name": "id_config",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ejes": {
+          "name": "ejes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "config_rigido_id_config_config_vehiculo_id_fk": {
+          "name": "config_rigido_id_config_config_vehiculo_id_fk",
+          "tableFrom": "config_rigido",
+          "tableTo": "config_vehiculo",
+          "columnsFrom": [
+            "id_config"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.config_vehiculo": {
+      "name": "config_vehiculo",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_categoria": {
+          "name": "id_categoria",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "codigo": {
+          "name": "codigo",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombre_comun": {
+          "name": "nombre_comun",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "capacidad_max_ton": {
+          "name": "capacidad_max_ton",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "licencia_requerida": {
+          "name": "licencia_requerida",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "config_vehiculo_id_categoria_categoria_vehiculo_id_fk": {
+          "name": "config_vehiculo_id_categoria_categoria_vehiculo_id_fk",
+          "tableFrom": "config_vehiculo",
+          "tableTo": "categoria_vehiculo",
+          "columnsFrom": [
+            "id_categoria"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.empresas": {
+      "name": "empresas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ruc": {
+          "name": "ruc",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "direccion": {
+          "name": "direccion",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "id_usuario": {
+          "name": "id_usuario",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "empresas_id_usuario_usuarios_id_fk": {
+          "name": "empresas_id_usuario_usuarios_id_fk",
+          "tableFrom": "empresas",
+          "tableTo": "usuarios",
+          "columnsFrom": [
+            "id_usuario"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.estado_postulacion": {
+      "name": "estado_postulacion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "estado_postulacion_nombre_unique": {
+          "name": "estado_postulacion_nombre_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nombre"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.estado_viaje": {
+      "name": "estado_viaje",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "estado_viaje_nombre_unique": {
+          "name": "estado_viaje_nombre_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "nombre"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.fletes": {
+      "name": "fletes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_empresa": {
+          "name": "id_empresa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "codigo": {
+          "name": "codigo",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'FLT-' || to_char(now(), 'YYYYMMDD') || '-' || substr(gen_random_uuid()::text, 1, 4)"
+        },
+        "id_tipo_carga": {
+          "name": "id_tipo_carga",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_salida": {
+          "name": "fecha_salida",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_entrega_estimada": {
+          "name": "fecha_entrega_estimada",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "peso": {
+          "name": "peso",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origen_nombre": {
+          "name": "origen_nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origen_geom": {
+          "name": "origen_geom",
+          "type": "geometry",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destino_nombre": {
+          "name": "destino_nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destino_geom": {
+          "name": "destino_geom",
+          "type": "geometry",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "carga_peligrosa": {
+          "name": "carga_peligrosa",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "total_pago": {
+          "name": "total_pago",
+          "type": "numeric(12, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "fletes_id_empresa_empresas_id_fk": {
+          "name": "fletes_id_empresa_empresas_id_fk",
+          "tableFrom": "fletes",
+          "tableTo": "empresas",
+          "columnsFrom": [
+            "id_empresa"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "fletes_id_tipo_carga_carga_types_id_fk": {
+          "name": "fletes_id_tipo_carga_carga_types_id_fk",
+          "tableFrom": "fletes",
+          "tableTo": "carga_types",
+          "columnsFrom": [
+            "id_tipo_carga"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "fletes_codigo_unique": {
+          "name": "fletes_codigo_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "codigo"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.flota": {
+      "name": "flota",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_config": {
+          "name": "id_config",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "placa": {
+          "name": "placa",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "marca": {
+          "name": "marca",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modelo": {
+          "name": "modelo",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "anio": {
+          "name": "anio",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "id_transportista": {
+          "name": "id_transportista",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "flota_id_config_config_vehiculo_id_fk": {
+          "name": "flota_id_config_config_vehiculo_id_fk",
+          "tableFrom": "flota",
+          "tableTo": "config_vehiculo",
+          "columnsFrom": [
+            "id_config"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "flota_id_transportista_transportistas_id_fk": {
+          "name": "flota_id_transportista_transportistas_id_fk",
+          "tableFrom": "flota",
+          "tableTo": "transportistas",
+          "columnsFrom": [
+            "id_transportista"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.postulaciones": {
+      "name": "postulaciones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_publicacion": {
+          "name": "id_publicacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_transportista": {
+          "name": "id_transportista",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_flota": {
+          "name": "id_flota",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_estado": {
+          "name": "id_estado",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "postulaciones_id_publicacion_publicaciones_id_fk": {
+          "name": "postulaciones_id_publicacion_publicaciones_id_fk",
+          "tableFrom": "postulaciones",
+          "tableTo": "publicaciones",
+          "columnsFrom": [
+            "id_publicacion"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "postulaciones_id_transportista_transportistas_id_fk": {
+          "name": "postulaciones_id_transportista_transportistas_id_fk",
+          "tableFrom": "postulaciones",
+          "tableTo": "transportistas",
+          "columnsFrom": [
+            "id_transportista"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "postulaciones_id_flota_flota_id_fk": {
+          "name": "postulaciones_id_flota_flota_id_fk",
+          "tableFrom": "postulaciones",
+          "tableTo": "flota",
+          "columnsFrom": [
+            "id_flota"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "postulaciones_id_estado_estado_postulacion_id_fk": {
+          "name": "postulaciones_id_estado_estado_postulacion_id_fk",
+          "tableFrom": "postulaciones",
+          "tableTo": "estado_postulacion",
+          "columnsFrom": [
+            "id_estado"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "postulaciones_publicacion_transportista_unique": {
+          "name": "postulaciones_publicacion_transportista_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id_publicacion",
+            "id_transportista"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.publicaciones": {
+      "name": "publicaciones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_flete": {
+          "name": "id_flete",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_empresa": {
+          "name": "id_empresa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_publicacion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'borrador'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "publicaciones_id_flete_fletes_id_fk": {
+          "name": "publicaciones_id_flete_fletes_id_fk",
+          "tableFrom": "publicaciones",
+          "tableTo": "fletes",
+          "columnsFrom": [
+            "id_flete"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "publicaciones_id_empresa_empresas_id_fk": {
+          "name": "publicaciones_id_empresa_empresas_id_fk",
+          "tableFrom": "publicaciones",
+          "tableTo": "empresas",
+          "columnsFrom": [
+            "id_empresa"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "publicaciones_id_flete_unique": {
+          "name": "publicaciones_id_flete_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id_flete"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.roles": {
+      "name": "roles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transportistas": {
+      "name": "transportistas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apellido": {
+          "name": "apellido",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cedula": {
+          "name": "cedula",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "direccion": {
+          "name": "direccion",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "id_usuario": {
+          "name": "id_usuario",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transportistas_id_usuario_usuarios_id_fk": {
+          "name": "transportistas_id_usuario_usuarios_id_fk",
+          "tableFrom": "transportistas",
+          "tableTo": "usuarios",
+          "columnsFrom": [
+            "id_usuario"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.usuarios": {
+      "name": "usuarios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "google_id": {
+          "name": "google_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "onboarding_completed": {
+          "name": "onboarding_completed",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "usuarios_role_id_roles_id_fk": {
+          "name": "usuarios_role_id_roles_id_fk",
+          "tableFrom": "usuarios",
+          "tableTo": "roles",
+          "columnsFrom": [
+            "role_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "usuarios_email_unique": {
+          "name": "usuarios_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "usuarios_google_id_unique": {
+          "name": "usuarios_google_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "google_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.viajes": {
+      "name": "viajes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_flete": {
+          "name": "id_flete",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_publicacion": {
+          "name": "id_publicacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_postulacion": {
+          "name": "id_postulacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_transportista": {
+          "name": "id_transportista",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_empresa": {
+          "name": "id_empresa",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_flota": {
+          "name": "id_flota",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_estado": {
+          "name": "id_estado",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_inicio": {
+          "name": "fecha_inicio",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_fin": {
+          "name": "fecha_fin",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pagado": {
+          "name": "pagado",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "viajes_id_flete_fletes_id_fk": {
+          "name": "viajes_id_flete_fletes_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "fletes",
+          "columnsFrom": [
+            "id_flete"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_id_publicacion_publicaciones_id_fk": {
+          "name": "viajes_id_publicacion_publicaciones_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "publicaciones",
+          "columnsFrom": [
+            "id_publicacion"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_id_postulacion_postulaciones_id_fk": {
+          "name": "viajes_id_postulacion_postulaciones_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "postulaciones",
+          "columnsFrom": [
+            "id_postulacion"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_id_transportista_transportistas_id_fk": {
+          "name": "viajes_id_transportista_transportistas_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "transportistas",
+          "columnsFrom": [
+            "id_transportista"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_id_empresa_empresas_id_fk": {
+          "name": "viajes_id_empresa_empresas_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "empresas",
+          "columnsFrom": [
+            "id_empresa"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_id_flota_flota_id_fk": {
+          "name": "viajes_id_flota_flota_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "flota",
+          "columnsFrom": [
+            "id_flota"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_id_estado_estado_viaje_id_fk": {
+          "name": "viajes_id_estado_estado_viaje_id_fk",
+          "tableFrom": "viajes",
+          "tableTo": "estado_viaje",
+          "columnsFrom": [
+            "id_estado"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "viajes_id_postulacion_unique": {
+          "name": "viajes_id_postulacion_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id_postulacion"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.viajes_reasignaciones": {
+      "name": "viajes_reasignaciones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "id_viaje": {
+          "name": "id_viaje",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_transportista_anterior": {
+          "name": "id_transportista_anterior",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id_transportista_nuevo": {
+          "name": "id_transportista_nuevo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "viajes_reasignaciones_id_viaje_viajes_id_fk": {
+          "name": "viajes_reasignaciones_id_viaje_viajes_id_fk",
+          "tableFrom": "viajes_reasignaciones",
+          "tableTo": "viajes",
+          "columnsFrom": [
+            "id_viaje"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_reasignaciones_id_transportista_anterior_transportistas_id_fk": {
+          "name": "viajes_reasignaciones_id_transportista_anterior_transportistas_id_fk",
+          "tableFrom": "viajes_reasignaciones",
+          "tableTo": "transportistas",
+          "columnsFrom": [
+            "id_transportista_anterior"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "viajes_reasignaciones_id_transportista_nuevo_transportistas_id_fk": {
+          "name": "viajes_reasignaciones_id_transportista_nuevo_transportistas_id_fk",
+          "tableFrom": "viajes_reasignaciones",
+          "tableTo": "transportistas",
+          "columnsFrom": [
+            "id_transportista_nuevo"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.estado_publicacion": {
+      "name": "estado_publicacion",
+      "schema": "public",
+      "values": [
+        "borrador",
+        "publicado"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
