@@ -260,5 +260,6 @@ Geometrías (`origen_geom`, `destino_geom`, ubicación del conductor) habilitan 
 [![GitHub](https://img.shields.io/badge/GitHub-erickAlejandr0-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/erickAlejandr0)
 
 ## Licencia
+![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)
 
 Proyecto privado. Todos los derechos reservados.
