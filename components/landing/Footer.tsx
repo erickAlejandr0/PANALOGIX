@@ -53,7 +53,7 @@ export function Footer() {
 
         <div className="mt-16 border-t border-[rgba(196,198,206,0.2)] pt-8">
           <p className="text-base text-[#44474d]">
-            © 2024 Panalogix. Todos los derechos reservados.
+            © 2026 Panalogix. Todos los derechos reservados.
           </p>
         </div>
       </div>

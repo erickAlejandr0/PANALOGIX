@@ -1,8 +1,16 @@
 import Image from "next/image";
 import { AuthBrandingPanel } from "@/components/auth/AuthBrandingPanel";
 import { SignUpForm } from "@/components/auth/SignUpForm";
+import { getOAuthErrorMessage } from "@/lib/auth/oauth-messages";
 
-export default function SignUpPage() {
+interface SignUpPageProps {
+  searchParams: Promise<{ error?: string }>;
+}
+
+export default async function SignUpPage({ searchParams }: SignUpPageProps) {
+  const params = await searchParams;
+  const errorMessage = getOAuthErrorMessage(params.error);
+
   return (
     <main className="flex min-h-screen w-full bg-[#f8f9ff]">
       <AuthBrandingPanel />
@@ -19,6 +27,11 @@ export default function SignUpPage() {
               className="h-auto w-[240px]"
             />
           </div>
+          {errorMessage && (
+            <p className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
+              {errorMessage}
+            </p>
+          )}
           <SignUpForm />
         </div>
       </section>

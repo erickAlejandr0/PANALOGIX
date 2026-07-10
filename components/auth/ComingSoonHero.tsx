@@ -1,8 +1,10 @@
 'use client'
 
+import { logoutAction } from "@/actions/authActions";
+import { completeOnboardingAction } from "@/actions/onboardingActions";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useParallax } from "@/hooks/useParallax";
 import type { Variants } from "framer-motion"
 
@@ -80,10 +82,10 @@ export function ComingSoonHero({ profileLabel }: ComingSoonHeroProps) {
             </motion.span>
           )}
 
-          <div className="max-w-3xl space-y-4">
+          <div className="flex max-w-[896px] flex-col items-center gap-4">
             <motion.h1
               variants={item}
-              className="font-mono text-3xl font-bold leading-tight tracking-tight text-white drop-shadow-lg md:text-5xl md:leading-[56px]"
+              className="max-w-[768px] font-mono text-3xl font-bold tracking-[-0.96px] text-white drop-shadow-[0px_4px_1.5px_rgba(0,0,0,0.1),0px_10px_4px_rgba(0,0,0,0.04)] md:text-[48px] md:leading-[56px]"
             >
               El futuro de la logística
               <br />
@@ -91,12 +93,33 @@ export function ComingSoonHero({ profileLabel }: ComingSoonHeroProps) {
             </motion.h1>
             <motion.p
               variants={item}
-              className="mx-auto max-w-2xl text-base leading-7 text-[#b5c7ea] opacity-90 md:text-lg md:leading-8"
+              className="mx-auto max-w-[672px] text-base leading-7 text-[#b5c7ea] opacity-90 drop-shadow-[0px_2px_1px_rgba(0,0,0,0.06),0px_4px_1.5px_rgba(0,0,0,0.07)] md:text-lg md:leading-[28px]"
             >
               Estamos construyendo el marketplace de fletes más avanzado del país.
-              Únete a la revolución logística.
+              Únete
+              <br />
+              a la revolución logística.
             </motion.p>
           </div>
+
+          <motion.div variants={item} className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <form action={completeOnboardingAction}>
+              <button
+                type="submit"
+                className="rounded-full bg-[#2dbcfe] px-[41px] py-[21px] text-sm font-semibold tracking-[0.14px] text-[#000615] transition hover:brightness-110"
+              >
+                Completar registro →
+              </button>
+            </form>
+            <form action={logoutAction}>
+              <button
+                type="submit"
+                className="rounded-full border border-white/30 px-[41px] py-[21px] text-sm font-semibold tracking-[0.14px] text-white transition hover:border-white/50 hover:bg-white/5"
+              >
+                Salir →
+              </button>
+            </form>
+          </motion.div>
         </motion.div>
       </main>
 

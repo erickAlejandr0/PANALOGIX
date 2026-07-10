@@ -12,12 +12,13 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { GoogleIcon } from "./GoogleIcon";
+import { registrarAction } from "@/actions/authActions";
 
 export type AccountType = "transportista" | "empresa";
 
 const accountTypes = [
-  { id: "transportista" as const, label: "Transportista", icon: Truck },
-  { id: "empresa" as const, label: "Empresa", icon: Building2 },
+  { id: "transportista" as const, label: "Transportista", icon: Truck, roleId: 1 },
+  { id: "empresa" as const, label: "Empresa", icon: Building2, roleId: 2 },
 ];
 
 export function SignUpForm() {
@@ -25,9 +26,42 @@ export function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = () => {
-    console.log({ accountType, email, password });
+  const handleGoogleSignUp = () => {
+    const selectedRole = accountTypes.find((type) => type.id === accountType);
+    if (!selectedRole) {
+      setError("Tipo de cuenta inválido");
+      return;
+    }
+    window.location.href = `/api/auth/google?mode=register&roleId=${selectedRole.roleId}`;
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError("");
+
+    const selectedRole = accountTypes.find((type) => type.id === accountType);
+    if (!selectedRole) {
+      setError("Tipo de cuenta inválido");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("roleId", selectedRole.roleId.toString());
+
+      const result = await registrarAction(formData);
+      if (result?.error) {
+        setError(result.error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -40,6 +74,12 @@ export function SignUpForm() {
           Únete a la red logística más eficiente.
         </p>
       </div>
+
+      {error && (
+        <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
 
       <div className="mt-6 space-y-2">
         <p className="text-xs font-semibold tracking-wide text-[#121c27]">
@@ -78,7 +118,7 @@ export function SignUpForm() {
         <button
           type="button"
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#c4c6ce] bg-white px-4 py-3.5 text-sm font-semibold tracking-wide text-[#121c27] shadow-sm transition hover:bg-[#f8f9ff]"
-          onClick={() => console.log("google sign up")}
+          onClick={handleGoogleSignUp}
         >
           <GoogleIcon />
           Registrarse con Google
@@ -150,11 +190,12 @@ export function SignUpForm() {
 
         <button
           type="button"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2ecc71] px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-sm transition hover:brightness-105"
+          disabled={isLoading}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2ecc71] px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-sm transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={handleSubmit}
         >
-          Registrarse
-          <ArrowRight size={14} />
+          {isLoading ? "Registrando..." : "Registrarse"}
+          {!isLoading && <ArrowRight size={14} />}
         </button>
 
         <p className="text-center text-sm text-[#44474d]">

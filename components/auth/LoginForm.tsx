@@ -5,14 +5,38 @@ import Link from "next/link";
 import { useState } from "react";
 import { DocumentAlert } from "./DocumentAlert";
 import { GoogleIcon } from "./GoogleIcon";
+import { loginAction } from "@/actions/authActions";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = () => {
-    console.log({ email, password, rememberMe });
+
+
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google?mode=login";
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("rememberMe", rememberMe ? "true" : "false");
+
+      const result = await loginAction(formData);
+      if (result?.error) {
+        setError(result.error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -28,12 +52,18 @@ export function LoginForm() {
 
       <DocumentAlert />
 
+      {error && (
+        <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
+
       <div className="mt-8 space-y-8">
         <div className="space-y-6">
           <button
             type="button"
             className="flex w-full items-center justify-center gap-4 rounded-lg border border-[#e2e8f0] bg-white px-4 py-3.5 text-base font-semibold text-[#0f172a] shadow-sm transition hover:bg-[#f8fafc]"
-            onClick={() => console.log("google sign in")}
+            onClick={handleGoogleLogin}
           >
             <GoogleIcon />
             Continuar con Google
@@ -119,11 +149,12 @@ export function LoginForm() {
         <div className="space-y-4 pt-4">
           <button
             type="button"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2ecc71] px-6 py-3.5 text-base font-bold text-white shadow-[0px_10px_15px_-3px_rgba(46,204,113,0.2),0px_4px_6px_-4px_rgba(46,204,113,0.2)] transition hover:brightness-105"
+            disabled={isLoading}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#2ecc71] px-6 py-3.5 text-base font-bold text-white shadow-[0px_10px_15px_-3px_rgba(46,204,113,0.2),0px_4px_6px_-4px_rgba(46,204,113,0.2)] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60"
             onClick={handleSubmit}
           >
-            Ingresar
-            <ArrowRight size={16} />
+            {isLoading ? "Ingresando..." : "Ingresar"}
+            {!isLoading && <ArrowRight size={16} />}
           </button>
 
           <div className="flex items-center py-4">
