@@ -20,7 +20,8 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             cd /var/www/app
-            git pull origin main
+            git fetch origin main
+            git reset --hard ${{ github.sha }}
             npm ci
             npm run build
             sudo systemctl restart nextjs
