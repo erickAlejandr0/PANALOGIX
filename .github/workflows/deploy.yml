@@ -1,0 +1,43 @@
+name: Deploy to Droplets
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy-web01:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build y restart en web-01
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_1_IP }}
+          username: deploy
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /var/www/app
+            git pull origin main
+            npm ci
+            npm run build
+            sudo systemctl restart nextjs
+
+  sync-to-web02:
+    needs: build-and-deploy-web01
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar llave SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DROPLET_1_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.DROPLET_2_IP }} >> ~/.ssh/known_hosts
+
+      - name: Copiar el build de web-01 a web-02 (sin recompilar)
+        run: |
+          scp -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/.next deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/.next
+          scp -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/public deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/public
+
+      - name: Reiniciar web-02
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "sudo systemctl restart nextjs"
