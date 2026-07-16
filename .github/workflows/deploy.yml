@@ -45,10 +45,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "rm -rf /var/www/app/.next /var/www/app/public"
 
-      - name: Copiar el build de web-01 a web-02 (sin recompilar)
+      - name: Copiar el build de web-01 a web-02 (sin recompilar, vía tar para manejar symlinks bien)
         run: |
-          scp -O -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/.next deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/.next
-          scp -O -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/public deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/public
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_1_IP }} "cd /var/www/app && tar czf - .next public" | ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "cd /var/www/app && tar xzf -"
 
       - name: Reiniciar web-02
         run: |
