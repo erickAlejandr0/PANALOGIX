@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy-web01:
     runs-on: ubuntu-latest
@@ -33,10 +37,18 @@ jobs:
           ssh-keyscan -H ${{ secrets.DROPLET_1_IP }} >> ~/.ssh/known_hosts
           ssh-keyscan -H ${{ secrets.DROPLET_2_IP }} >> ~/.ssh/known_hosts
 
+      - name: Actualizar código y dependencias en web-02 (fijado al commit exacto de este run, no al último de main)
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "cd /var/www/app && git fetch origin main && git reset --hard ${{ github.sha }} && npm ci --omit=dev"
+
+      - name: Borrar build viejo en web-02 antes de copiar (evita que scp anide la carpeta)
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "rm -rf /var/www/app/.next /var/www/app/public"
+
       - name: Copiar el build de web-01 a web-02 (sin recompilar)
         run: |
-          scp -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/.next deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/.next
-          scp -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/public deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/public
+          scp -O -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/.next deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/.next
+          scp -O -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/public deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/public
 
       - name: Reiniciar web-02
         run: |
