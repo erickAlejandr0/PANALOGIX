@@ -20,7 +20,8 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           script: |
             cd /var/www/app
-            git pull origin main
+            git fetch origin main
+            git reset --hard ${{ github.sha }}
             npm ci
             npm run build
             sudo systemctl restart nextjs
@@ -37,11 +38,18 @@ jobs:
           ssh-keyscan -H ${{ secrets.DROPLET_1_IP }} >> ~/.ssh/known_hosts
           ssh-keyscan -H ${{ secrets.DROPLET_2_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copiar el build de web-01 a web-02 (sin recompilar)
+      - name: Actualizar código y dependencias en web-02 (fijado al commit exacto de este run, no al último de main)
         run: |
-          scp -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/.next deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/
-          scp -3 -i ~/.ssh/deploy_key -r deploy@${{ secrets.DROPLET_1_IP }}:/var/www/app/public deploy@${{ secrets.DROPLET_2_IP }}:/var/www/app/
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "cd /var/www/app && git fetch origin main && git reset --hard ${{ github.sha }} && npm ci --omit=dev"
+
+      - name: Borrar build viejo en web-02 antes de copiar (evita que scp anide la carpeta)
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "rm -rf /var/www/app/.next /var/www/app/public"
+
+      - name: Copiar el build de web-01 a web-02 (sin recompilar, vía tar para manejar symlinks bien)
+        run: |
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_1_IP }} "cd /var/www/app && tar czf - .next public" | ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "cd /var/www/app && tar xzf -"
 
       - name: Reiniciar web-02
         run: |
-          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "cd /var/www/app && git pull origin main && npm ci && sudo systemctl restart nextjs"
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "sudo systemctl restart nextjs"
