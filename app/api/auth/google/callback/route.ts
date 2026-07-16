@@ -7,16 +7,20 @@ import { getPostAuthRedirect } from "@/lib/auth/routes";
 import { parseOAuthState } from "@/lib/auth/oauth-state";
 import { authService } from "@/service/authService";
 
-function redirectWithError(request: Request, errorCode: string) {
-  return NextResponse.redirect(new URL(`/login?error=${errorCode}`, request.url));
+
+
+const APP_URL = process.env.APP_URL;
+
+function getBaseUrl(request: Request): string {
+  return APP_URL || request.url;
 }
 
-function redirectWithSuccess(
-  request: Request,
-  path: string,
-  linked = false,
-) {
-  const url = new URL(path, request.url);
+function redirectWithError(request: Request, errorCode: string) {
+  return NextResponse.redirect(new URL(`/login?error=${errorCode}`, getBaseUrl(request)));
+}
+
+function redirectWithSuccess(request: Request, path: string, linked = false) {
+  const url = new URL(path, getBaseUrl(request));
   if (linked) {
     url.searchParams.set("success", "google_linked");
   }
