@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { getAppBaseUrl } from "@/lib/auth/app-url";
 import { getAuthCookieOptions } from "@/lib/auth/cookies";
 import { OAUTH_STATE_COOKIE } from "@/lib/auth/constants";
 import { exchangeCodeForProfile } from "@/lib/auth/google";
@@ -7,20 +8,14 @@ import { getPostAuthRedirect } from "@/lib/auth/routes";
 import { parseOAuthState } from "@/lib/auth/oauth-state";
 import { authService } from "@/service/authService";
 
-
-
-const APP_URL = process.env.APP_URL;
-
-function getBaseUrl(request: Request): string {
-  return APP_URL || request.url;
-}
-
 function redirectWithError(request: Request, errorCode: string) {
-  return NextResponse.redirect(new URL(`/login?error=${errorCode}`, getBaseUrl(request)));
+  return NextResponse.redirect(
+    new URL(`/login?error=${errorCode}`, getAppBaseUrl(request.url)),
+  );
 }
 
 function redirectWithSuccess(request: Request, path: string, linked = false) {
-  const url = new URL(path, getBaseUrl(request));
+  const url = new URL(path, getAppBaseUrl(request.url));
   if (linked) {
     url.searchParams.set("success", "google_linked");
   }

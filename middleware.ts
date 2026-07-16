@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getAppBaseUrl } from "@/lib/auth/app-url";
 import { verifyJwtToken } from "@/lib/auth/jwt";
 import {
   getDashboardPath,
@@ -9,7 +10,7 @@ import {
 import { TRANSPORTISTA_ROLE_ID } from "@/lib/validations/onboarding";
 
 function redirectToLogin(request: NextRequest, clearToken = false) {
-  const url = new URL("/login", request.url);
+  const url = new URL("/login", getAppBaseUrl(request.url));
   if (clearToken) {
     url.searchParams.set("error", "session_expired");
   }
@@ -19,6 +20,10 @@ function redirectToLogin(request: NextRequest, clearToken = false) {
     response.cookies.delete("token");
   }
   return response;
+}
+
+function appRedirect(request: NextRequest, path: string) {
+  return NextResponse.redirect(new URL(path, getAppBaseUrl(request.url)));
 }
 
 export async function middleware(request: NextRequest) {
@@ -46,26 +51,20 @@ export async function middleware(request: NextRequest) {
 
   if (payload.roleId === TRANSPORTISTA_ROLE_ID) {
     if (isProtectedMainRoute) {
-      return NextResponse.redirect(
-        new URL(
-          payload.onboardingCompleted
-            ? TRANSPORTISTA_CONTINUE_PATH
-            : getOnboardingPath(payload.roleId),
-          request.url,
-        ),
+      return appRedirect(
+        request,
+        payload.onboardingCompleted
+          ? TRANSPORTISTA_CONTINUE_PATH
+          : getOnboardingPath(payload.roleId),
       );
     }
 
     if (isOnboardingRoute && payload.onboardingCompleted) {
-      return NextResponse.redirect(
-        new URL(TRANSPORTISTA_CONTINUE_PATH, request.url),
-      );
+      return appRedirect(request, TRANSPORTISTA_CONTINUE_PATH);
     }
 
     if (!payload.onboardingCompleted && isContinueAppRoute) {
-      return NextResponse.redirect(
-        new URL(getOnboardingPath(payload.roleId), request.url),
-      );
+      return appRedirect(request, getOnboardingPath(payload.roleId));
     }
 
     if (
@@ -74,24 +73,18 @@ export async function middleware(request: NextRequest) {
       !isContinueAppRoute &&
       pathname !== "/login"
     ) {
-      return NextResponse.redirect(
-        new URL(getOnboardingPath(payload.roleId), request.url),
-      );
+      return appRedirect(request, getOnboardingPath(payload.roleId));
     }
 
     return NextResponse.next();
   }
 
   if (isOnboardingRoute && payload.onboardingCompleted) {
-    return NextResponse.redirect(
-      new URL(getDashboardPath(payload.roleId), request.url),
-    );
+    return appRedirect(request, getDashboardPath(payload.roleId));
   }
 
   if (isProtectedMainRoute && !payload.onboardingCompleted) {
-    return NextResponse.redirect(
-      new URL(getOnboardingPath(payload.roleId), request.url),
-    );
+    return appRedirect(request, getOnboardingPath(payload.roleId));
   }
 
   return NextResponse.next();
