@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAppBaseUrl } from "@/lib/auth/app-url";
 import {
   OAUTH_STATE_COOKIE,
   OAUTH_STATE_MAX_AGE,
@@ -18,7 +19,9 @@ import {
 } from "@/lib/validations/auth";
 
 function oauthErrorRedirect(request: Request, code: string) {
-  return NextResponse.redirect(new URL(`/login?error=${code}`, request.url));
+  return NextResponse.redirect(
+    new URL(`/login?error=${code}`, getAppBaseUrl(request.url)),
+  );
 }
 
 export async function GET(request: Request) {
@@ -33,7 +36,9 @@ export async function GET(request: Request) {
         mode === "register"
           ? "/Sign-up?error=invalid_params"
           : "/login?error=invalid_params";
-      return NextResponse.redirect(new URL(redirectPath, request.url));
+      return NextResponse.redirect(
+        new URL(redirectPath, getAppBaseUrl(request.url)),
+      );
     }
 
     const statePayload = createOAuthStatePayload(mode!, roleId ?? undefined);
