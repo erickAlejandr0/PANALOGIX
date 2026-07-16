@@ -1,6 +1,20 @@
 # Panalogix
 
+<div align="center">
+
 **Marketplace de logística terrestre para Panamá.** Conecta empresas que necesitan mover carga con transportistas verificados, con rastreo en tiempo real, prueba de entrega digital y pagos en escrow.
+
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![PostGIS](https://img.shields.io/badge/PostGIS-1F6B43?style=flat-square&logo=postgis&logoColor=white)](https://postgis.net/)
+[![Drizzle](https://img.shields.io/badge/Drizzle-0B0B0B?style=flat-square&logo=drizzle&logoColor=white)](https://orm.drizzle.team/)
+[![Stripe](https://img.shields.io/badge/Stripe-635BFF?style=flat-square&logo=stripe&logoColor=white)](https://stripe.com/)
+[![Ably](https://img.shields.io/badge/Ably-FF5416?style=flat-square&logo=ably&logoColor=white)](https://ably.com/)
+[![Mapbox](https://img.shields.io/badge/Mapbox-000000?style=flat-square&logo=mapbox&logoColor=white)](https://www.mapbox.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+</div>
 
 ---
 
@@ -241,6 +255,11 @@ Geometrías (`origen_geom`, `destino_geom`, ubicación del conductor) habilitan 
 
 ---
 
+## Autores
+
+[![GitHub](https://img.shields.io/badge/GitHub-erickAlejandr0-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/erickAlejandr0)
+
 ## Licencia
+![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)
 
 Proyecto privado. Todos los derechos reservados.

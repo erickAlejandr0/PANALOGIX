@@ -51,4 +51,4 @@ jobs:
 
       - name: Reiniciar web-02
         run: |
-          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "sudo systemctl restart nextjs"
+          ssh -i ~/.ssh/deploy_key deploy@${{ secrets.DROPLET_2_IP }} "cd /var/www/app && git pull origin main && npm ci && sudo systemctl restart nextjs"
