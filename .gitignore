@@ -16,6 +16,15 @@
 # testing
 /coverage
 
+# Robot Framework E2E (secretos, venv y reportes locales)
+/e2e-robot/variables/local.py
+/e2e-robot/results/
+/e2e-robot/.venv/
+
+# JMeter (reportes y .jtl locales)
+/jmeter/results/*
+!/jmeter/results/.gitkeep
+
 # next.js
 /.next/
 /out/

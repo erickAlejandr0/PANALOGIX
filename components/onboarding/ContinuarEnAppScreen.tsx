@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 
+import { DocumentVerificationPanel } from "@/components/onboarding/DocumentVerificationPanel";
+
 function BackgroundDots() {
   const dots = [
     [15, 25, 5, 0.2],
@@ -179,10 +181,12 @@ export function ContinuarEnAppScreen() {
               </div>
 
               <p className="max-w-xl text-lg leading-7 text-[#44474d]">
-                Has completado tu registro con éxito. Para empezar a gestionar
-                fletes, optimizar tus rutas y recibir notificaciones en tiempo
-                real, descarga nuestra aplicación móvil oficial.
+                Has completado tu registro con éxito. Antes de gestionar fletes
+                en la app, verifica tus documentos obligatorios. Cuando estén
+                aprobados, descarga la aplicación móvil oficial.
               </p>
+
+              <DocumentVerificationPanel />
 
               <div className="pt-2">
                 <AppStoreButton />

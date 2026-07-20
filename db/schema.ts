@@ -15,6 +15,7 @@ import {
   text,
   timestamp,
   unique,
+  uuid,
   varchar,
   real,
 } from "drizzle-orm/pg-core";
@@ -106,6 +107,8 @@ export const transportistas = pgTable("transportistas", {
   cedula: varchar("cedula", { length: 255 }).notNull(),
   direccion: varchar("direccion", { length: 255 }).notNull(),
   telefono: varchar("telefono", { length: 255 }).notNull(),
+  /** UUID enviado al SVD como transportista_id (bridge serial↔UUID). */
+  svdExternalId: uuid("svd_external_id").notNull().defaultRandom().unique(),
   stripeConnectAccountId: varchar("stripe_connect_account_id", { length: 255 }),
   billingSetupStatus: billingSetupStatusEnum("billing_setup_status")
     .notNull()
@@ -373,6 +376,53 @@ export const paymentEscrows = pgTable("payment_escrows", {
 
 export type PaymentEscrow = typeof paymentEscrows.$inferSelect;
 export type NewPaymentEscrow = typeof paymentEscrows.$inferInsert;
+
+export const documentVerificationStatusEnum = pgEnum(
+  "document_verification_status",
+  [
+    "pending",
+    "submitted",
+    "processing",
+    "aprobado",
+    "rechazado",
+    "revision_manual",
+  ],
+);
+
+export const documentVerifications = pgTable(
+  "document_verifications",
+  {
+    id: serial("id").primaryKey(),
+    transportistaId: integer("transportista_id")
+      .notNull()
+      .references(() => transportistas.id),
+    tipoDocumento: varchar("tipo_documento", { length: 40 }).notNull(),
+    svdDocumentoId: uuid("svd_documento_id"),
+    s3KeyRaw: text("s3_key_raw"),
+    status: documentVerificationStatusEnum("status")
+      .notNull()
+      .default("pending"),
+    resultadoSvd: varchar("resultado_svd", { length: 40 }),
+    scoreLectura: varchar("score_lectura", { length: 16 }),
+    scoreAutenticidad: varchar("score_autenticidad", { length: 16 }),
+    fechaVencimiento: date("fecha_vencimiento"),
+    lastError: text("last_error"),
+    submittedAt: timestamp("submitted_at"),
+    completedAt: timestamp("completed_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    unique("document_verifications_transportista_tipo_unique").on(
+      table.transportistaId,
+      table.tipoDocumento,
+    ),
+  ],
+);
+
+export type DocumentVerification = typeof documentVerifications.$inferSelect;
+export type NewDocumentVerification =
+  typeof documentVerifications.$inferInsert;
 
 export const categoriaVehiculo = pgTable('categoria_vehiculo', {
     id:     serial('id').primaryKey(),
