@@ -133,8 +133,15 @@ body {
 .animate-float { animation: float 6s ease-in-out infinite; }
 .interactive-layer { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 
+/* Barra de progreso indeterminada (verificación documental SVD) */
+@keyframes svd-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+.animate-svd-indeterminate { animation: svd-indeterminate 1.4s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .nebula-1, .nebula-2, .animate-float { animation: none; }
+  .nebula-1, .nebula-2, .animate-float, .animate-svd-indeterminate { animation: none; }
   .interactive-layer { transition: none; }
 }
 

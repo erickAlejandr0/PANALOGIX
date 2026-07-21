@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
+  Clock,
+  FileText,
   Loader2,
   RefreshCw,
   Upload,
+  XCircle,
 } from "lucide-react";
 
 import type {
@@ -65,8 +68,12 @@ export function DocumentVerificationPanel({ initialStatus = null }: Props) {
     void fetchStatus();
   }, [fetchStatus]);
 
-  const shouldPoll =
-    status?.overall === "processing" || status?.overall === "manual_review";
+  // Polling por documento: el overall puede ser "incomplete" (faltan otros
+  // docs) mientras uno individual sigue en verificación, y aun así hay que
+  // refrescar hasta que llegue el resultado.
+  const shouldPoll = (status?.documents ?? []).some(
+    (d) => d.status === "submitted" || d.status === "processing",
+  );
 
   useEffect(() => {
     if (!shouldPoll) return;
@@ -75,14 +82,6 @@ export function DocumentVerificationPanel({ initialStatus = null }: Props) {
     }, POLL_MS);
     return () => window.clearInterval(id);
   }, [shouldPoll, fetchStatus]);
-
-  const byTipo = useMemo(() => {
-    const map = new Map<string, DocumentStatusItem>();
-    for (const doc of status?.documents ?? []) {
-      map.set(doc.tipo, doc);
-    }
-    return map;
-  }, [status]);
 
   async function uploadTipo(tipo: string) {
     const file = selectedFiles[tipo];
@@ -132,7 +131,15 @@ export function DocumentVerificationPanel({ initialStatus = null }: Props) {
     );
   }
 
-  const overall = status?.overall ?? "incomplete";
+  const documents = status?.documents ?? [];
+  const approvedCount = documents.filter((d) => d.status === "aprobado").length;
+  const totalCount = documents.length || 4;
+  const anyInFlight = documents.some(
+    (d) => d.status === "submitted" || d.status === "processing",
+  );
+  const anyRejected = documents.some((d) => d.status === "rechazado");
+  const anyManual = documents.some((d) => d.status === "revision_manual");
+  const allApproved = totalCount > 0 && approvedCount === totalCount;
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-[rgba(196,198,206,0.5)] bg-white/80 p-5 shadow-[0px_4px_16px_0px_rgba(11,31,58,0.04)]">
@@ -146,6 +153,16 @@ export function DocumentVerificationPanel({ initialStatus = null }: Props) {
         </p>
       </div>
 
+      <ProgressBanner
+        approvedCount={approvedCount}
+        totalCount={totalCount}
+        documents={documents}
+        anyInFlight={anyInFlight}
+        anyRejected={anyRejected}
+        anyManual={anyManual}
+        allApproved={allApproved}
+      />
+
       {error ? (
         <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
@@ -153,103 +170,268 @@ export function DocumentVerificationPanel({ initialStatus = null }: Props) {
         </div>
       ) : null}
 
-      {overall === "processing" ? (
-        <div className="flex items-center gap-3 rounded-lg border border-[#c4c6ce] bg-[#e5efff] px-4 py-3 text-sm text-[#00658d]">
-          <Loader2 className="size-5 shrink-0 animate-spin" />
-          <span>
-            Verificando documentos… Esto suele tardar unos segundos. No cierres
-            esta ventana.
-          </span>
-        </div>
-      ) : null}
-
-      {overall === "completed" ? (
-        <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-          <CheckCircle2 className="size-5 shrink-0" />
-          <span className="font-semibold">Verificación completada.</span>
-          <span>Ya puedes continuar con la app móvil.</span>
-        </div>
-      ) : null}
-
-      {overall === "manual_review" ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          Uno o más documentos están en revisión manual. Te avisaremos cuando
-          estén listos; puedes dejar esta página abierta.
-        </div>
-      ) : null}
-
-      {overall === "needs_retry" ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
-          Algunos documentos fueron rechazados. Corrígelos y vuelve a
-          intentarlo.
-        </div>
-      ) : null}
-
       <ul className="flex flex-col gap-3">
-        {(status?.documents ?? []).map((doc) => {
-          const label = TIPO_LABELS[doc.tipo] ?? doc.tipo;
-          const isBusy = uploadingTipo === doc.tipo;
-          const canUpload =
-            doc.status === "absent" ||
-            doc.status === "pending" ||
-            doc.status === "rechazado";
-          const showRetry = doc.status === "rechazado";
-
-          return (
-            <li
-              key={doc.tipo}
-              className="flex flex-col gap-2 rounded-lg border border-[#e3e5ec] bg-[#f8f9ff] p-3 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#000615]">{label}</p>
-                <p className="text-xs text-[#44474d]">
-                  {statusLabel(doc.status)}
-                  {doc.lastError ? ` — ${doc.lastError}` : ""}
-                </p>
-              </div>
-
-              {canUpload ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[#c4c6ce] bg-white px-2.5 py-1.5 text-xs font-medium text-[#00658d] hover:bg-[#e5efff]">
-                    <Upload className="size-3.5" />
-                    {selectedFiles[doc.tipo]?.name
-                      ? truncate(selectedFiles[doc.tipo]!.name, 18)
-                      : "Elegir archivo"}
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
-                      className="hidden"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0] ?? null;
-                        setSelectedFiles((prev) => ({ ...prev, [doc.tipo]: f }));
-                      }}
-                    />
-                  </label>
-                  <button
-                    type="button"
-                    disabled={isBusy || !selectedFiles[doc.tipo]}
-                    onClick={() => void uploadTipo(doc.tipo)}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-[#00658d] px-2.5 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {isBusy ? (
-                      <Loader2 className="size-3.5 animate-spin" />
-                    ) : showRetry ? (
-                      <RefreshCw className="size-3.5" />
-                    ) : null}
-                    {showRetry ? "Reintentar" : "Enviar"}
-                  </button>
-                </div>
-              ) : doc.status === "processing" || doc.status === "submitted" ? (
-                <Loader2 className="size-4 animate-spin text-[#00658d]" />
-              ) : doc.status === "aprobado" ? (
-                <CheckCircle2 className="size-5 text-emerald-600" />
-              ) : null}
-            </li>
-          );
-        })}
+        {documents.map((doc) => (
+          <DocumentCard
+            key={doc.tipo}
+            doc={doc}
+            isUploading={uploadingTipo === doc.tipo}
+            selectedFile={selectedFiles[doc.tipo] ?? null}
+            onSelectFile={(f) =>
+              setSelectedFiles((prev) => ({ ...prev, [doc.tipo]: f }))
+            }
+            onUpload={() => void uploadTipo(doc.tipo)}
+          />
+        ))}
       </ul>
     </div>
   );
+}
+
+function ProgressBanner({
+  approvedCount,
+  totalCount,
+  documents,
+  anyInFlight,
+  anyRejected,
+  anyManual,
+  allApproved,
+}: {
+  approvedCount: number;
+  totalCount: number;
+  documents: DocumentStatusItem[];
+  anyInFlight: boolean;
+  anyRejected: boolean;
+  anyManual: boolean;
+  allApproved: boolean;
+}) {
+  if (allApproved) {
+    return (
+      <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+        <CheckCircle2 className="size-5 shrink-0" />
+        <span>
+          <span className="font-semibold">Verificación completada.</span> Ya
+          puedes continuar con la app móvil.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2.5 rounded-lg border border-[#e3e5ec] bg-[#f8f9ff] px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-sm text-[#000615]">
+          {anyInFlight ? (
+            <Loader2 className="size-4 shrink-0 animate-spin text-[#00658d]" />
+          ) : null}
+          <span className="font-semibold">
+            {approvedCount} de {totalCount} documentos verificados
+          </span>
+        </div>
+        {anyInFlight ? (
+          <span className="text-xs text-[#00658d]">Verificando…</span>
+        ) : null}
+      </div>
+
+      <div className="flex gap-1.5">
+        {documents.map((doc) => (
+          <div
+            key={doc.tipo}
+            title={TIPO_LABELS[doc.tipo] ?? doc.tipo}
+            className={`h-1.5 flex-1 overflow-hidden rounded-full ${segmentClass(doc.status)}`}
+          >
+            {doc.status === "submitted" || doc.status === "processing" ? (
+              <div className="h-full w-1/3 animate-svd-indeterminate rounded-full bg-[#00658d]" />
+            ) : null}
+          </div>
+        ))}
+      </div>
+
+      {anyInFlight ? (
+        <p className="text-xs leading-5 text-[#44474d]">
+          Estamos verificando tus documentos. Suele tardar menos de un minuto;
+          esta pantalla se actualiza sola.
+        </p>
+      ) : anyRejected ? (
+        <p className="text-xs leading-5 text-red-800">
+          Algunos documentos fueron rechazados. Revisa el motivo y vuelve a
+          subirlos.
+        </p>
+      ) : anyManual ? (
+        <p className="text-xs leading-5 text-amber-900">
+          Uno o más documentos están en revisión manual. Te avisaremos cuando
+          estén listos.
+        </p>
+      ) : (
+        <p className="text-xs leading-5 text-[#44474d]">
+          Sube los documentos pendientes para completar tu verificación.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function DocumentCard({
+  doc,
+  isUploading,
+  selectedFile,
+  onSelectFile,
+  onUpload,
+}: {
+  doc: DocumentStatusItem;
+  isUploading: boolean;
+  selectedFile: File | null;
+  onSelectFile: (file: File | null) => void;
+  onUpload: () => void;
+}) {
+  const label = TIPO_LABELS[doc.tipo] ?? doc.tipo;
+  const inFlight = doc.status === "submitted" || doc.status === "processing";
+  const canUpload =
+    doc.status === "absent" ||
+    doc.status === "pending" ||
+    doc.status === "rechazado";
+  const showRetry = doc.status === "rechazado";
+
+  return (
+    <li
+      className={`flex flex-col gap-2 rounded-lg border p-3 transition-colors ${cardClass(doc.status)}`}
+    >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3">
+          <StatusIcon status={doc.status} />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-[#000615]">{label}</p>
+            <p className={`text-xs ${statusTextClass(doc.status)}`}>
+              {statusLabel(doc.status)}
+              {doc.status === "rechazado" && doc.lastError
+                ? ` — ${doc.lastError}`
+                : ""}
+            </p>
+          </div>
+        </div>
+
+        {canUpload ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-[#c4c6ce] bg-white px-2.5 py-1.5 text-xs font-medium text-[#00658d] hover:bg-[#e5efff]">
+              <Upload className="size-3.5" />
+              {selectedFile?.name
+                ? truncate(selectedFile.name, 18)
+                : "Elegir archivo"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf"
+                className="hidden"
+                onChange={(e) => onSelectFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+            <button
+              type="button"
+              disabled={isUploading || !selectedFile}
+              onClick={onUpload}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#00658d] px-2.5 py-1.5 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isUploading ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : showRetry ? (
+                <RefreshCw className="size-3.5" />
+              ) : null}
+              {isUploading ? "Enviando…" : showRetry ? "Reintentar" : "Enviar"}
+            </button>
+          </div>
+        ) : null}
+      </div>
+
+      {inFlight ? (
+        <div className="h-1 w-full overflow-hidden rounded-full bg-[#d6e4ff]">
+          <div className="h-full w-1/3 animate-svd-indeterminate rounded-full bg-[#00658d]" />
+        </div>
+      ) : null}
+    </li>
+  );
+}
+
+function StatusIcon({ status }: { status: DocumentStatusItem["status"] }) {
+  switch (status) {
+    case "submitted":
+    case "processing":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e5efff]">
+          <Loader2 className="size-4.5 animate-spin text-[#00658d]" />
+        </span>
+      );
+    case "aprobado":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+          <CheckCircle2 className="size-4.5 text-emerald-600" />
+        </span>
+      );
+    case "rechazado":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-red-100">
+          <XCircle className="size-4.5 text-red-600" />
+        </span>
+      );
+    case "revision_manual":
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100">
+          <Clock className="size-4.5 text-amber-700" />
+        </span>
+      );
+    default:
+      return (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eceef4]">
+          <FileText className="size-4.5 text-[#44474d]" />
+        </span>
+      );
+  }
+}
+
+function segmentClass(status: DocumentStatusItem["status"]): string {
+  switch (status) {
+    case "aprobado":
+      return "bg-emerald-500";
+    case "rechazado":
+      return "bg-red-400";
+    case "revision_manual":
+      return "bg-amber-400";
+    case "submitted":
+    case "processing":
+      return "bg-[#d6e4ff]";
+    default:
+      return "bg-[#e3e5ec]";
+  }
+}
+
+function cardClass(status: DocumentStatusItem["status"]): string {
+  switch (status) {
+    case "aprobado":
+      return "border-emerald-200 bg-emerald-50/60";
+    case "rechazado":
+      return "border-red-200 bg-red-50/60";
+    case "revision_manual":
+      return "border-amber-200 bg-amber-50/60";
+    case "submitted":
+    case "processing":
+      return "border-[#b9d3ff] bg-[#f2f7ff]";
+    default:
+      return "border-[#e3e5ec] bg-[#f8f9ff]";
+  }
+}
+
+function statusTextClass(status: DocumentStatusItem["status"]): string {
+  switch (status) {
+    case "aprobado":
+      return "text-emerald-700";
+    case "rechazado":
+      return "text-red-700";
+    case "revision_manual":
+      return "text-amber-800";
+    case "submitted":
+    case "processing":
+      return "text-[#00658d]";
+    default:
+      return "text-[#44474d]";
+  }
 }
 
 function statusLabel(status: DocumentStatusItem["status"]): string {
@@ -258,14 +440,15 @@ function statusLabel(status: DocumentStatusItem["status"]): string {
     case "pending":
       return "Pendiente de subir";
     case "submitted":
+      return "Enviado — en cola de verificación";
     case "processing":
-      return "En verificación";
+      return "Verificando documento…";
     case "aprobado":
       return "Aprobado";
     case "rechazado":
       return "Rechazado";
     case "revision_manual":
-      return "Revisión manual";
+      return "En revisión manual";
     default:
       return status;
   }
